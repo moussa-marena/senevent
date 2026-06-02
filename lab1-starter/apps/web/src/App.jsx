@@ -1,12 +1,53 @@
-import { useState } from 'react'
+import { useState } from "react";
 
-function App() {
+const App = () => {
+  // 1. Déclaration des états pour les événements et le statut de chargement
+  const [evenements, setEvenements] = useState([]);
+  const [chargement, setChargement] = useState(false);
+
+  // 2. Fonction asynchrone pour récupérer le fichier JSON
+  const charger = async () => {
+    setChargement(true);
+    try {
+      // Correction apportée ici : "evenements.json" sans accent
+      const reponse = await fetch("/evenements.json");
+      const data = await reponse.json();
+      setEvenements(data); // Met à jour l'état avec les données reçues
+    } catch (error) {
+      console.error("Erreur :", error);
+    }
+    setChargement(false);
+  };
+
   return (
-    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      <h1>SénEvent - Bienvenue sur React</h1>
-      <p>Prochaine sous-étape : Migrer nos événements ici !</p>
-    </div>
-  )
-}
+    <div style={{ maxWidth: "700px", margin: "2rem auto", fontFamily: "sans-serif" }}>
+      <h1 style={{ color: "#1a3a5c" }}>SenEvent --- Événements à Dakar</h1>
 
-export default App
+      {/* Bouton dynamique piloté par l'état chargement */}
+      <button onClick={charger} disabled={chargement}>
+        {chargement ? "Chargement ..." : "Charger les événements"}
+      </button>
+
+      {/* Boucle map pour transformer chaque objet du tableau en composant visuel */}
+      {evenements.map(ev => (
+        <EvenementCarte key={ev.id} ev={ev} />
+      ))}
+    </div>
+  );
+};
+
+// 3. Deuxième composant pour l'affichage d'une carte d'événement (reçoit les props)
+const EvenementCarte = ({ ev }) => {
+  const prix = ev.prix === 0 ? "Gratuit" : `${ev.prix} FCFA`;
+
+  return (
+    <div style={{ border: "1px solid #ccc", padding: "1rem", margin: "0.8rem 0", borderRadius: "8px" }}>
+      <h3 style={{ margin: 0, color: "#1a3a5c" }}>{ev.titre}</h3>
+      <p style={{ margin: "0.2rem 0", color: "#555" }}>Catégorie : {ev.categorie}</p>
+      <p style={{ margin: "0.2rem 0", color: "#555" }}>Lieu : {ev.lieu_nom}</p>
+      <p style={{ margin: "0.2rem 0", color: "#ea7d2b", fontWeight: "bold" }}>{prix}</p>
+    </div>
+  );
+};
+
+export default App;
