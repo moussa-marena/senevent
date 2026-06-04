@@ -1,4 +1,5 @@
-const EvenementCarte = ({ ev }) => {
+// Recevoir l'objet 'ev' ET la prop booléenne 'afficherDetails'
+const EvenementCarte = ({ ev, afficherDetails }) => {
     const prix = ev.prix === 0 ? "Gratuit" : `${ev.prix} FCFA`;
 
     return (
@@ -12,9 +13,14 @@ const EvenementCarte = ({ ev }) => {
             <p style={{ margin: "0.2rem 0", color: "#555" }}>
                 Catégorie: {ev.categorie}
             </p>
-            <p style={{ margin: "0.2rem 0", color: "#555" }}>
-                Lieu: {ev.lieu_nom}
-            </p>
+
+            {/* Rendu conditionnel : le lieu s'affiche UNIQUEMENT si afficherDetails est true */}
+            {afficherDetails && (
+                <p style={{ margin: "0.2rem 0", color: "#555" }}>
+                    Lieu: {ev.lieu_nom}
+                </p>
+            )}
+
             <p style={{ margin: "0.2rem 0", color: "#ea7d2b", fontWeight: "bold" }}>
                 {prix}
             </p>

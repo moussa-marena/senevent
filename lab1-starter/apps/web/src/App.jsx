@@ -32,7 +32,7 @@ const App = () => {
 
       {/* Boucle map pour transformer chaque objet du tableau en composant visuel */}
       {evenements.map(ev => (
-        <EvenementCarte key={ev.id} ev={ev} />
+        <EvenementCarte key={ev.id} ev={ev} afficherDetails={true} />
       ))}
     </div>
   );
