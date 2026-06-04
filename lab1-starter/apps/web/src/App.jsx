@@ -1,4 +1,6 @@
 import { useState } from "react";
+// Ajout de l'importation du composant extrait
+import EvenementCarte from "./components/EvenementCarte";
 
 const App = () => {
   // 1. Déclaration des états pour les événements et le statut de chargement
@@ -9,7 +11,7 @@ const App = () => {
   const charger = async () => {
     setChargement(true);
     try {
-      // Correction apportée ici : "evenements.json" sans accent
+      // "evenements.json" sans accent dans le dossier public
       const reponse = await fetch("/evenements.json");
       const data = await reponse.json();
       setEvenements(data); // Met à jour l'état avec les données reçues
@@ -32,20 +34,6 @@ const App = () => {
       {evenements.map(ev => (
         <EvenementCarte key={ev.id} ev={ev} />
       ))}
-    </div>
-  );
-};
-
-// 3. Deuxième composant pour l'affichage d'une carte d'événement (reçoit les props)
-const EvenementCarte = ({ ev }) => {
-  const prix = ev.prix === 0 ? "Gratuit" : `${ev.prix} FCFA`;
-
-  return (
-    <div style={{ border: "1px solid #ccc", padding: "1rem", margin: "0.8rem 0", borderRadius: "8px" }}>
-      <h3 style={{ margin: 0, color: "#1a3a5c" }}>{ev.titre}</h3>
-      <p style={{ margin: "0.2rem 0", color: "#555" }}>Catégorie : {ev.categorie}</p>
-      <p style={{ margin: "0.2rem 0", color: "#555" }}>Lieu : {ev.lieu_nom}</p>
-      <p style={{ margin: "0.2rem 0", color: "#ea7d2b", fontWeight: "bold" }}>{prix}</p>
     </div>
   );
 };
