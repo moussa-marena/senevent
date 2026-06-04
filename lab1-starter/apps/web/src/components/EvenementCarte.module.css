@@ -1,0 +1,22 @@
+.carte {
+    border: 1px solid #ccc;
+    padding: 1rem;
+    margin: 0.8rem 0;
+    border-radius: 8px;
+}
+
+.titre {
+    margin: 0;
+    color: #1a3a5c;
+}
+
+.texte {
+    margin: 0.2rem 0;
+    color: #555;
+}
+
+.prix {
+    margin: 0.2rem 0;
+    color: #ea7d2b;
+    font-weight: bold;
+}

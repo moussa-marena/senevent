@@ -1,6 +1,8 @@
 import { useState } from "react";
-// Ajout de l'importation du composant extrait
+// Importation du composant extrait
 import EvenementCarte from "./components/EvenementCarte";
+// Importation du CSS Module officiel du professeur
+import styles from "./App.module.css";
 
 const App = () => {
   // 1. Déclaration des états pour les événements et le statut de chargement
@@ -22,11 +24,15 @@ const App = () => {
   };
 
   return (
-    <div style={{ maxWidth: "700px", margin: "2rem auto", fontFamily: "sans-serif" }}>
-      <h1 style={{ color: "#1a3a5c" }}>SenEvent --- Événements à Dakar</h1>
+    <div className={styles.container}>
+      <h1 className={styles.titre}>SenEvent --- Événements à Dakar</h1>
 
-      {/* Bouton dynamique piloté par l'état chargement */}
-      <button onClick={charger} disabled={chargement}>
+      {/* Bouton dynamique piloté par l'état chargement avec la classe stylisée */}
+      <button
+        onClick={charger}
+        disabled={chargement}
+        className={styles.bouton}
+      >
         {chargement ? "Chargement ..." : "Charger les événements"}
       </button>
 
