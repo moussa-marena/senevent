@@ -1,6 +1,5 @@
 import { useState } from "react";
 import EvenementCarte from "./components/EvenementCarte";
-import SearchBar from "./components/SearchBar";
 import styles from "./App.module.css";
 
 const App = () => {
@@ -42,10 +41,8 @@ const App = () => {
           : "Charger les evenements"}
       </button>
 
-      <SearchBar
-        recherche={recherche}
-        onRecherche={setRecherche}
-      />
+      {/* La barre de recherche est masquée temporairement pour éviter la page blanche */}
+      {/* <SearchBar recherche={recherche} onRecherche={setRecherche} /> */}
 
       <p className={styles.compteur}>
         {evenementsFiltres.length} evenement(s) trouve(s)
