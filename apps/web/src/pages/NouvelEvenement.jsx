@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./NouvelEvenement.module.css";
 
 const NouvelEvenement = ({ onAjouter }) => {
@@ -7,7 +8,7 @@ const NouvelEvenement = ({ onAjouter }) => {
   const [lieu, setLieu] = useState("");
   const [prix, setPrix] = useState(0);
   const [erreurs, setErreurs] = useState({});
-
+  const navigate = useNavigate();
   const valider = () => {
     const e = {};
     if (titre.trim().length < 3) {
@@ -41,6 +42,7 @@ const NouvelEvenement = ({ onAjouter }) => {
     };
 
     onAjouter(nouvel);
+    navigate("/");
   };
 
   return (
