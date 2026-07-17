@@ -1,5 +1,6 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
-import BoutonInscription from "../components/BoutonInscription"; // Import du bouton d'inscription
+import { supabase } from "../lib/supabase"; // Importation du client Supabase pour le DELETE
+import BoutonInscription from "../components/BoutonInscription";
 import styles from "./Detail.module.css";
 
 const Detail = ({ evenements, session }) => {
@@ -15,6 +16,23 @@ const Detail = ({ evenements, session }) => {
       </div>
     );
   }
+
+  // Fonction pour supprimer l'événement (DELETE)
+  const supprimer = async () => {
+    const confirme = window.confirm("Supprimer cet événement ?");
+    if (!confirme) return;
+
+    const { error } = await supabase
+      .from("evenements")
+      .delete()
+      .eq("id", evenement.id);
+
+    if (error) {
+      alert("Erreur : " + error.message);
+    } else {
+      navigate("/");
+    }
+  };
 
   const prix = evenement.prix === 0 ? "Gratuit" : `${evenement.prix} FCFA`;
   const date = new Date(evenement.date_debut).toLocaleString("fr-FR");
@@ -42,8 +60,15 @@ const Detail = ({ evenements, session }) => {
         <dd className={styles.prix}>{prix}</dd>
       </dl>
 
-      {/* Étape 3 : Affichage du bouton d'inscription en lui passant l'id et la session */}
+      {/* Bouton d'inscription/désinscription */}
       <BoutonInscription evenementId={evenement.id} session={session} />
+
+      {/* Étape 4 : Bouton de suppression visible uniquement pour l'organisateur */}
+      {session && session.user.id === evenement.organisateur_id && (
+        <button onClick={supprimer} className={styles.supprimer}>
+          Supprimer cet événement
+        </button>
+      )}
     </div>
   );
 };
