@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Variables d'environnement locales (Supabase)
+.env.local
+apps/web/.env.local
