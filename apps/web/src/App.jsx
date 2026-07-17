@@ -111,9 +111,10 @@ const App = () => {
               path="/nouveau"
               element={<NouvelEvenement onAjoutReussi={charger} />}
             />
+            {/* Étape 3 : Ajout de la prop session pour alimenter le BoutonInscription */}
             <Route
               path="/evenement/:id"
-              element={<Detail evenements={evenements} />}
+              element={<Detail evenements={evenements} session={session} />}
             />
           </Routes>
         </>

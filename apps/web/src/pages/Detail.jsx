@@ -1,7 +1,8 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
+import BoutonInscription from "../components/BoutonInscription"; // Import du bouton d'inscription
 import styles from "./Detail.module.css";
 
-const Detail = ({ evenements }) => {
+const Detail = ({ evenements, session }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const evenement = evenements.find(ev => ev.id === Number(id));
@@ -9,8 +10,8 @@ const Detail = ({ evenements }) => {
   if (!evenement) {
     return (
       <div className={styles.container}>
-        <p>Evenement introuvable.</p>
-        <Link to="/" className={styles.retour}>Retour a la liste</Link>
+        <p>Événement introuvable.</p>
+        <Link to="/" className={styles.retour}>Retour à la liste</Link>
       </div>
     );
   }
@@ -40,6 +41,9 @@ const Detail = ({ evenements }) => {
         <dt>Prix</dt>
         <dd className={styles.prix}>{prix}</dd>
       </dl>
+
+      {/* Étape 3 : Affichage du bouton d'inscription en lui passant l'id et la session */}
+      <BoutonInscription evenementId={evenement.id} session={session} />
     </div>
   );
 };
