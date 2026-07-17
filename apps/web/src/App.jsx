@@ -58,11 +58,6 @@ const App = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Fonction existante pour ajouter un événement en local (Sera adaptée à l'étape 2)
-  const ajouterEvenement = (nouvel) => {
-    setEvenements((precedents) => [nouvel, ...precedents]);
-  };
-
   // Écran d'attente pendant que Supabase vérifie si l'utilisateur est connecté
   if (chargementSession) {
     return (
@@ -111,9 +106,10 @@ const App = () => {
                 />
               }
             />
+            {/* Étape 2 : Remplacement de onAjouter par onAjoutReussi={charger} */}
             <Route
               path="/nouveau"
-              element={<NouvelEvenement onAjouter={ajouterEvenement} />}
+              element={<NouvelEvenement onAjoutReussi={charger} />}
             />
             <Route
               path="/evenement/:id"

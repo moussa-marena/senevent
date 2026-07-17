@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabase";
 import styles from "./NouvelEvenement.module.css";
 
-const NouvelEvenement = ({ onAjouter }) => {
+const NouvelEvenement = ({ onAjoutReussi }) => {
   const [titre, setTitre] = useState("");
   const [categorie, setCategorie] = useState("concert");
   const [lieu, setLieu] = useState("");
   const [prix, setPrix] = useState(0);
   const [erreurs, setErreurs] = useState({});
+  const [erreurServeur, setErreurServeur] = useState(null);
+  const [enCours, setEnCours] = useState(false);
   const navigate = useNavigate();
+
   const valider = () => {
     const e = {};
     if (titre.trim().length < 3) {
@@ -23,78 +27,99 @@ const NouvelEvenement = ({ onAjouter }) => {
     return e;
   };
 
-  const soumettre = (event) => {
+  const soumettre = async (event) => {
     event.preventDefault();
+    setErreurServeur(null);
     const erreursTrouvees = valider();
     if (Object.keys(erreursTrouvees).length > 0) {
       setErreurs(erreursTrouvees);
       return;
     }
+    setEnCours(true);
 
-    const nouvel = {
-      id: Date.now(),
+    // Recuperer l’utilisateur connecte
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setErreurServeur("Vous devez etre connecte.");
+      setEnCours(false);
+      return;
+    }
+
+    // Insertion reelle dans la table Supabase
+    const { error } = await supabase.from("evenements").insert({
       titre: titre.trim(),
       categorie,
       lieu_nom: lieu.trim(),
       prix: Number(prix),
       date_debut: new Date().toISOString(),
-      image_url: `https://placehold.co/400x250/1a3a5c/fff?text=${categorie}`,
-    };
+      organisateur_id: user.id, // RLS verifiera la correspondance
+    });
 
-    onAjouter(nouvel);
-    navigate("/");
+    setEnCours(false);
+
+    if (error) {
+      setErreurServeur(error.message);
+    } else {
+      onAjoutReussi(); // demande a App de recharger la liste (Re-fetch)
+      navigate("/");
+    }
   };
 
   return (
-    <form className={styles.form} onSubmit={soumettre}>
-      <h2>Ajouter un evenement</h2>
+    <div className={styles.container}>
+      <h2>Créer un nouvel événement</h2>
+      <form onSubmit={soumettre} className={styles.formulaire}>
+        <div className={styles.champ}>
+          <label>Titre de l'événement</label>
+          <input
+            type="text"
+            value={titre}
+            onChange={(e) => setTitre(e.target.value)}
+          />
+          {erreurs.titre && <span className={styles.erreurTxt}>{erreurs.titre}</span>}
+        </div>
 
-      <label className={styles.champ}>
-        Titre
-        <input
-          type="text"
-          value={titre}
-          onChange={e => setTitre(e.target.value)}
-        />
-        {erreurs.titre && <span className={styles.erreur}>{erreurs.titre}</span>}
-      </label>
+        <div className={styles.champ}>
+          <label>Catégorie</label>
+          <select value={categorie} onChange={(e) => setCategorie(e.target.value)}>
+            <option value="concert">Concert</option>
+            <option value="sport">Sport</option>
+            <option value="conference">Conférence</option>
+            <option value="festival">Festival</option>
+          </select>
+        </div>
 
-      <label className={styles.champ}>
-        Categorie
-        <select value={categorie} onChange={e => setCategorie(e.target.value)}>
-          <option value="concert">Concert</option>
-          <option value="expo">Exposition</option>
-          <option value="conference">Conference</option>
-          <option value="atelier">Atelier</option>
-          <option value="soutenance">Soutenance</option>
-        </select>
-      </label>
+        <div className={styles.champ}>
+          <label>Lieu</label>
+          <input
+            type="text"
+            value={lieu}
+            onChange={(e) => setLieu(e.target.value)}
+          />
+          {erreurs.lieu && <span className={styles.erreurTxt}>{erreurs.lieu}</span>}
+        </div>
 
-      <label className={styles.champ}>
-        Lieu
-        <input
-          type="text"
-          value={lieu}
-          onChange={e => setLieu(e.target.value)}
-        />
-        {erreurs.lieu && <span className={styles.erreur}>{erreurs.lieu}</span>}
-      </label>
+        <div className={styles.champ}>
+          <label>Prix (FCFA)</label>
+          <input
+            type="number"
+            value={prix}
+            onChange={(e) => setPrix(e.target.value)}
+          />
+          {erreurs.prix && <span className={styles.erreurTxt}>{erreurs.prix}</span>}
+        </div>
 
-      <label className={styles.champ}>
-        Prix (FCFA, 0 pour gratuit)
-        <input
-          type="number"
-          min="0"
-          value={prix}
-          onChange={e => setPrix(e.target.value)}
-        />
-        {erreurs.prix && <span className={styles.erreur}>{erreurs.prix}</span>}
-      </label>
+        {/* Affichage de l'erreur serveur si l'écriture échoue */}
+        {erreurServeur && (
+          <p className={styles.erreur}>Erreur : {erreurServeur}</p>
+        )}
 
-      <button type="submit" className={styles.bouton}>
-        Ajouter
-      </button>
-    </form>
+        {/* Bouton désactivé pendant le traitement réseau */}
+        <button type="submit" disabled={enCours} className={styles.bouton}>
+          {enCours ? "Envoi..." : "Ajouter"}
+        </button>
+      </form>
+    </div>
   );
 };
 
