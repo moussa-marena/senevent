@@ -37,6 +37,18 @@ const Detail = ({ evenements, session }) => {
   const prix = evenement.prix === 0 ? "Gratuit" : `${evenement.prix} FCFA`;
   const date = new Date(evenement.date_debut).toLocaleString("fr-FR");
 
+  // --- LOGIQUE D'AFFICHAGE DES IMAGES PAR DÉFAUT DU PROJET ---
+  // On récupère le nom de la catégorie pour charger le bon asset local / chemin relatif
+  const nomCategorie = evenement.categorie ? evenement.categorie.toLowerCase() : "";
+
+  // Si l'événement a une URL web valide (http...) venant de Supabase, on l'utilise.
+  // Sinon, on reconstruit le chemin local dynamique vers ton dossier public (ex: /concert.png, /expo.png, /conference.png)
+  const estUneUrlDistante = evenement.image_url && evenement.image_url.startsWith("http");
+
+  const imageSource = estUneUrlDistante
+    ? evenement.image_url
+    : `/${nomCategorie}.png`; // S'adapte automatiquement à /concert.png, /expo.png, /conference.png etc.
+
   return (
     <div className={styles.container}>
       <button onClick={() => navigate(-1)} className={styles.retour}>
@@ -46,16 +58,29 @@ const Detail = ({ evenements, session }) => {
       <p className={styles.meta}>
         <span className={styles.categorie}>{evenement.categorie}</span>
       </p>
+
+      {/* Affichage de ton image d'origine basée sur la catégorie */}
       <img
-        src={evenement.image_url}
+        src={imageSource}
         alt={evenement.titre}
         className={styles.image}
+        onError={(e) => {
+          // Sécurité au cas où l'extension est différente (ex: .jpg ou .svg au lieu de .png)
+          e.target.src = `/${nomCategorie}.jpg`;
+        }}
       />
+
       <dl className={styles.infos}>
+        {/* Étape 5 : Affichage de l'organisateur via la jointure profiles */}
+        <dt>Organisé par</dt>
+        <dd>{evenement.profiles ? evenement.profiles.nom : "Équipe SenEvent"}</dd>
+
         <dt>Lieu</dt>
         <dd>{evenement.lieu_nom}</dd>
+
         <dt>Date</dt>
         <dd>{date}</dd>
+
         <dt>Prix</dt>
         <dd className={styles.prix}>{prix}</dd>
       </dl>

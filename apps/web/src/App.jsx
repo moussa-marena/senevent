@@ -17,15 +17,15 @@ const App = () => {
   const [session, setSession] = useState(null);
   const [chargementSession, setChargementSession] = useState(true);
 
-  // Étape 1 : Fonction charger mise à jour pour utiliser Supabase (SELECT)
+  // Étape 1 & Étape 5 : Fonction charger mise à jour pour inclure la jointure profiles(nom)
   const charger = async () => {
     setChargement(true);
     setErreur(null);
 
-    // Remplacement du fetch par le pattern { data, error } de Supabase
+    // .select("*, profiles(nom)") récupère les colonnes de l'événement ET le nom du créateur
     const { data, error } = await supabase
       .from("evenements")
-      .select("*")
+      .select("*, profiles(nom)")
       .order("date_debut", { ascending: true }); // Trie par date croissante côté BDD
 
     if (error) {
@@ -79,7 +79,7 @@ const App = () => {
   return (
     <BrowserRouter>
       {!session ? (
-        // Si non connecté : On affiche uniquement l'Auth (dans le BrowserRouter pour éviter le bug !)
+        // Si non connecté : On affiche uniquement l'Auth
         <div style={{
           display: "flex",
           justifyContent: "center",
