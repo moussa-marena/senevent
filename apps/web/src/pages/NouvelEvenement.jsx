@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../lib/supabase";
+import { creerEvenement, getSupabase } from "@senevent/shared";
 import styles from "./NouvelEvenement.module.css";
 
 const NouvelEvenement = ({ onAjoutReussi }) => {
@@ -37,31 +37,31 @@ const NouvelEvenement = ({ onAjoutReussi }) => {
     }
     setEnCours(true);
 
-    // Recuperer l’utilisateur connecte
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      setErreurServeur("Vous devez etre connecte.");
-      setEnCours(false);
-      return;
-    }
+    try {
+      // 1. Récupérer l'utilisateur connecté via getSupabase()
+      const { data: { user } } = await getSupabase().auth.getUser();
+      if (!user) {
+        setErreurServeur("Vous devez etre connecte.");
+        setEnCours(false);
+        return;
+      }
 
-    // Insertion reelle dans la table Supabase
-    const { error } = await supabase.from("evenements").insert({
-      titre: titre.trim(),
-      categorie,
-      lieu_nom: lieu.trim(),
-      prix: Number(prix),
-      date_debut: new Date().toISOString(),
-      organisateur_id: user.id, // RLS verifiera la correspondance
-    });
+      // 2. Appel de la fonction métier du package
+      await creerEvenement({
+        titre: titre.trim(),
+        categorie,
+        lieu_nom: lieu.trim(),
+        prix: Number(prix),
+        date_debut: new Date().toISOString(),
+        organisateur_id: user.id,
+      });
 
-    setEnCours(false);
-
-    if (error) {
-      setErreurServeur(error.message);
-    } else {
-      onAjoutReussi(); // demande a App de recharger la liste (Re-fetch)
+      onAjoutReussi(); // Demande à App de recharger la liste (Re-fetch)
       navigate("/");
+    } catch (error) {
+      setErreurServeur(error.message);
+    } finally {
+      setEnCours(false);
     }
   };
 

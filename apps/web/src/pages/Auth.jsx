@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { supabase } from "../lib/supabase";
 import { useNavigate } from "react-router-dom";
+import { sInscrire, seConnecter } from "@senevent/shared";
 import styles from "./Auth.module.css";
 
 const Auth = () => {
@@ -19,25 +19,11 @@ const Auth = () => {
 
         try {
             if (mode === "signup") {
-                const { data, error } = await supabase.auth.signUp({
-                    email,
-                    password: motDePasse,
-                });
-                if (error) throw error;
-
-                // Créer la ligne de profil associée dans la table public.profiles
-                if (data.user) {
-                    const { error: e2 } = await supabase
-                        .from("profiles")
-                        .insert({ id: data.user.id, nom, role: "PUBLIC" });
-                    if (e2) throw e2;
-                }
+                // Inscription via la fonction métier du package partagé
+                await sInscrire(email, motDePasse, nom);
             } else {
-                const { error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password: motDePasse,
-                });
-                if (error) throw error;
+                // Connexion via la fonction métier du package partagé
+                await seConnecter(email, motDePasse);
             }
             navigate("/");
         } catch (e) {
@@ -87,7 +73,11 @@ const Auth = () => {
             {erreur && <p className={styles.erreur}>{erreur}</p>}
 
             <button type="submit" disabled={enCours} className={styles.bouton}>
-                {enCours ? "Chargement..." : mode === "signup" ? "Créer le compte" : "Se connecter"}
+                {enCours
+                    ? "Chargement..."
+                    : mode === "signup"
+                        ? "Créer le compte"
+                        : "Se connecter"}
             </button>
 
             <button

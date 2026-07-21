@@ -1,13 +1,17 @@
 import { NavLink } from "react-router-dom";
-import { supabase } from "../lib/supabase";
+import { seDeconnecter } from "@senevent/shared";
 import styles from "./NavBar.module.css";
 
 const NavBar = ({ session }) => {
     const lienActif = ({ isActive }) =>
         isActive ? `${styles.lien} ${styles.lienActif}` : styles.lien;
 
-    const seDeconnecter = async () => {
-        await supabase.auth.signOut();
+    const handleDeconnexion = async () => {
+        try {
+            await seDeconnecter();
+        } catch (error) {
+            console.error("Erreur lors de la déconnexion :", error);
+        }
     };
 
     return (
@@ -29,7 +33,7 @@ const NavBar = ({ session }) => {
                 {session ? (
                     <>
                         <span className={styles.email}>{session.user.email}</span>
-                        <button onClick={seDeconnecter} className={styles.deconnexion}>
+                        <button onClick={handleDeconnexion} className={styles.deconnexion}>
                             Se deconnecter
                         </button>
                     </>
