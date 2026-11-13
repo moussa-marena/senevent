@@ -9,3 +9,8 @@
 | Membre3 | Membre |
 
 Mandat 1 (Labs 0 à 2) : Git master = Mouhamed
+  
+## En ligne  
+Application web https://senevent-green.vercel.app  
+Deploiement continu chaque merge sur main met la production a jour.  
+chaque Pull Request recoit une URL de previsualisation. 
