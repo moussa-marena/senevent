@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "SenEvent",
+    "slug": "senevent",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,15 +16,22 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "sn.ucad.senevent.equipe1",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#1a3a6c"
       },
       "edgeToEdgeEnabled": true
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "scheme": "senevent"
+    "scheme": "senevent",
+    "extra": {
+      "eas": {
+        "projectId": "e51324ef-5671-4fa7-8d2a-d020ecbf4165"
+      }
+    },
+    "owner": "moussa-marena"
   }
 }
